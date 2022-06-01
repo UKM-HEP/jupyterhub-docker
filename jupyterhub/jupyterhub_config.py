@@ -16,6 +16,7 @@ c.JupyterHub.admin_access = True
 c.Spawner.default_url = '/lab'
 
 ## Authenticator
+'''
 from jhub_cas_authenticator.cas_auth import CASAuthenticator
 c.JupyterHub.authenticator_class = CASAuthenticator
 
@@ -30,6 +31,15 @@ c.CASAuthenticator.cas_service_validate_url = 'https://cas.uvsq.fr/serviceValida
 c.CASAuthenticator.cas_service_url = 'https://%s/hub/login' % os.environ['HOST']
 
 c.Authenticator.admin_users = { 'lucadefe' }
+'''
+
+# super user
+c.Authenticator.admin_users = {
+    'shoh'
+}
+# allow user
+c.Authenticator.allowed_users = {
+}
 
 
 ## Docker spawner
@@ -51,6 +61,7 @@ c.Spawner.mem_limit = '10G'
 
 
 ## Services
+# terminate idle jupyter session after 1 hour
 c.JupyterHub.services = [
     {
         'name': 'cull_idle',

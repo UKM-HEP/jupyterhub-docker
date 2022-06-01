@@ -3,15 +3,15 @@ version: '3'
 services:
   jupyterhub:
     build: jupyterhub
-    image: jupyterhub_img
-    container_name: jupyterhub
+    image: jupyhub
+    container_name: jupyhub
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - jupyterhub_data:/srv/jupyterhub
     environment:
-      - DOCKER_JUPYTER_CONTAINER=jupyterlab_img
+      - DOCKER_JUPYTER_CONTAINER=jupyroot
       - DOCKER_NETWORK_NAME=${COMPOSE_PROJECT_NAME}_default
-      - HUB_IP=jupyterhub
+      - HUB_IP=jupyhub
       - HOST
     labels:
       - "traefik.enable=true"
@@ -20,8 +20,8 @@ services:
 
   jupyterlab:
     build: jupyterlab
-    image: jupyterlab_img
-    container_name: jupyterlab-throaway
+    image: jupyroot
+    container_name: jupyroot
     network_mode: none
     command: echo
 

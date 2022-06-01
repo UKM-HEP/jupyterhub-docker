@@ -3,6 +3,7 @@ debug = true
 logLevel = "ERROR"
 defaultEntryPoints = ["https","http"]
 
+# redirect HTTP -> HTTPS, install certificates
 [entryPoints]
   [entryPoints.http]
   address = ":80"
@@ -12,13 +13,15 @@ defaultEntryPoints = ["https","http"]
   address = ":443"
     [entryPoints.https.tls]
       [[entryPoints.https.tls.certificates]]
-      certFile = "/etc/certs/jupyter_ens_uvsq_fr.crt"
-      keyFile = "/etc/certs/jupyter.ens.uvsq.fr.key"
+      certFile = "/etc/certs/server.crt"
+      keyFile = "/etc/certs/server.key"
 
+# activating docker API
 [docker]
 domain = "docker.local"
 watch = true
 
+# activate traefik dashboard
 [api]
   [api.statistics]
     recentErrors = 10

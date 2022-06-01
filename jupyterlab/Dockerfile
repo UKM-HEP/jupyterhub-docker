@@ -1,67 +1,63 @@
-FROM jupyter/scipy-notebook:137a295ff71b
+# This will install:
+# - CentOS 7
+# - Jupyter 
+# - ROOT
 
-LABEL maintainer="Luca De Feo <https://defeo.lu/>"
+# To see the version numbers (which change as the EPEL and PyPI repositories evolve)
+# start the Terminal from the Jupyter notebook and type (e.g.):
 
-USER root
+# rpm -q root
+# pip3 show jupyter
 
-# APT packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    fonts-dejavu \
-    tzdata \
-    gfortran \
-    gcc \
-    scilab \
-    pari-gp \
-    libpari-dev \
-    sagemath \
-    sagemath-jupyter \
-    libgmp-dev \
-    && apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+FROM centos:7
 
-USER $NB_UID
+WORKDIR /work
 
-# Conda packages
-# Sage conflicts with the latest jupyterhub, thus we must relax the pinning
-RUN conda install --quiet --yes \
-    'r-base=3.4.1' \
-    'r-irkernel=0.8*' \
-    'r-plyr=1.8*' \
-    'r-devtools=1.13*' \
-    'r-tidyverse=1.1*' \
-    'r-shiny=1.0*' \
-    'r-rmarkdown=1.8*' \
-    'r-forecast=8.2*' \
-    'r-rsqlite=2.0*' \
-    'r-reshape2=1.4*' \
-    'r-nycflights13=0.2*' \
-    'r-caret=6.0*' \
-    'r-rcurl=1.95*' \
-    'r-crayon=1.3*' \
-    'r-randomforest=4.6*' \
-    'r-htmltools=0.3*' \
-    'r-sparklyr=0.7*' \
-    'r-htmlwidgets=1.0*' \
-    'r-hexbin=1.27*' \
-    'jupyterhub' \
-#    'sage=8.*' \
-    'julia=1.0*' && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR
+# Install packages from CentOS 7 base, EPEL, and SCL (for a later compiler version)
+RUN yum -y update
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+RUN yum -y install centos-release-scl
 
-ENV CPATH=$CONDA_DIR/include
+# The "native" gcc compiler in CentOS 7 doesn't support C++11, which is
+# needed to compile at least one of the python packages below. Include the
+# SCL development toolset, which includes a more advanced compiler. 
+RUN yum -y install devtoolset-7-gcc*
+SHELL [ "/usr/bin/scl", "enable", "devtoolset-7"]
 
-RUN pip install \
-    pari_jupyter \
-#    PySingular jupyter_kernel_singular \
-    scilab-kernel && \
-    fix-permissions $CONDA_DIR
+# Install packages needed for ROOT
+RUN yum -y install python3 python3-pip root which python3-root python3-devel
+RUN yum -y install root-tmva root-tmva-python root-minuit2 python3-jupyroot
 
-# Fix SageMath kernel
-USER root
-RUN sed -i 's/"\/usr\/bin\/sage"/"env", "PATH=\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin", "\/usr\/bin\/sage"/' /usr/share/jupyter/kernels/sagemath/kernel.json
-USER $NB_UID
+# curl will be needed when we install python packages below.
+RUN yum -y install curl libcurl libcurl-devel 
 
-# Add conda env hook
-COPY ./conda-activate.sh /usr/local/bin/before-notebook.d/
+# Additional packages for some C++ work:
+RUN yum -y install make boost-devel gsl-devel binutils-devel 
+#RUN yum -y install gcc-c++ gcc-gfortran
+
+# The "native" version of cmake in CentOS 7 is old and doesn't have
+# the necessary features to compile some of the python packages below.
+# Set up cmake3 as default version of cmake.
+RUN yum -y install cmake3 
+RUN ln -sf /usr/bin/cmake3 /usr/bin/cmake
+
+# Other Linux packages required for python package compilation.
+RUN yum -y install python36-pillow-devel
+
+# Install packages from PyPI. These are the ones needed for almost any
+# Jupyter installation. 
+RUN pip3 install --upgrade wheel
+RUN pip3 install --upgrade jupyter
+RUN pip3 install --upgrade numpy scipy matplotlib 
+
+# These additional packages are handy, but not critical. 
+RUN pip3 install --upgrade jupyterlab
+# RUN pip3 install --upgrade iminuit pandas sympy terminado urllib3 pycurl tables
+RUN pip3 install --upgrade iminuit pandas sympy terminado urllib3 pycurl
+RUN pip3 install --upgrade rootpy rootkernel root-numpy uproot
+
+# Wrap it up.
+RUN yum clean all
+
+# Run jupyter when this docker container is started.
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8080", "--allow-root"]
