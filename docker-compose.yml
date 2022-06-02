@@ -3,13 +3,13 @@ version: '3'
 services:
   jupyterhub:
     build: jupyterhub
-    image: jupyhub
+    image: jupyhub_img
     container_name: jupyhub
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - jupyterhub_data:/srv/jupyterhub
     environment:
-      - DOCKER_JUPYTER_CONTAINER=jupyroot
+      - DOCKER_JUPYTER_CONTAINER=jupyroot_img
       - DOCKER_NETWORK_NAME=${COMPOSE_PROJECT_NAME}_default
       - HUB_IP=jupyhub
       - HOST
@@ -20,7 +20,7 @@ services:
 
   jupyterlab:
     build: jupyterlab
-    image: jupyroot
+    image: jupyroot_img
     container_name: jupyroot
     network_mode: none
     command: echo
