@@ -26,7 +26,7 @@ services:
     command: echo
 
   reverse-proxy:
-    image: traefik
+    image: traefik:1.7
     container_name: reverse-proxy
     ports:
       - "80:80"

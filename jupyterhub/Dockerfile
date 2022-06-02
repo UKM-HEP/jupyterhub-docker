@@ -2,6 +2,12 @@ FROM jupyterhub/jupyterhub:latest
 
 COPY jupyterhub_config.py .
 
-# RUN wget https://raw.githubusercontent.com/jupyterhub/jupyterhub/0.9.3/examples/cull-idle/cull_idle_servers.py
+RUN /usr/bin/python3 -m pip install --upgrade pip
 
-RUN pip install dockerspawner
+RUN pip3 install \
+    jupyterhub-idle-culler \
+    jupyterhub-nativeauthenticator \
+    jhub_cas_authenticator \
+    dockerspawner
+
+CMD ["jupyterhub", "--f=/srv/jupyterhub/jupyterhub_config.py"]

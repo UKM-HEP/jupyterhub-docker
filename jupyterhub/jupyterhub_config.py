@@ -15,32 +15,24 @@ import os
 c.JupyterHub.admin_access = True
 c.Spawner.default_url = '/lab'
 
+c.JupyterHub.load_roles = [
+    {
+        "name": "jupyterhub-idle-culler-role",
+        "scopes": [
+            "list:users",
+            "read:users:activity",
+            "read:servers",
+            "delete:servers",
+            # "admin:users", # if using --cull-users
+        ],
+        # assignment of role's permissions to:
+        "services": ["jupyterhub-idle-culler-service"],
+    }
+]
+
 ## Authenticator
-'''
-from jhub_cas_authenticator.cas_auth import CASAuthenticator
-c.JupyterHub.authenticator_class = CASAuthenticator
-
-# The CAS URLs to redirect (un)authenticated users to.
-c.CASAuthenticator.cas_login_url = 'https://cas.uvsq.fr/login'
-c.CASLocalAuthenticator.cas_logout_url = 'https://cas.uvsq/logout'
-
-# The CAS endpoint for validating service tickets.
-c.CASAuthenticator.cas_service_validate_url = 'https://cas.uvsq.fr/serviceValidate'
-
-# The service URL the CAS server will redirect the browser back to on successful authentication.
-c.CASAuthenticator.cas_service_url = 'https://%s/hub/login' % os.environ['HOST']
-
-c.Authenticator.admin_users = { 'lucadefe' }
-'''
-
-# super user
-c.Authenticator.admin_users = {
-    'shoh'
-}
-# allow user
-c.Authenticator.allowed_users = {
-}
-
+# https://blog.jupyter.org/simpler-authentication-for-small-scale-jupyterhubs-with-nativeauthenticator-999534c77a09
+c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator'
 
 ## Docker spawner
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
@@ -51,21 +43,24 @@ c.JupyterHub.hub_ip = os.environ['HUB_IP']
 
 # user data persistence
 # see https://github.com/jupyterhub/dockerspawner#data-persistence-and-dockerspawner
-notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan'
+notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') #or '/home/jovyan'
 c.DockerSpawner.notebook_dir = notebook_dir
 c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
 
 # Other stuff
-c.Spawner.cpu_limit = 1
-c.Spawner.mem_limit = '10G'
-
+c.Spawner.cpu_limit = 2
+c.Spawner.mem_limit = '5G'
 
 ## Services
 # terminate idle jupyter session after 1 hour
 c.JupyterHub.services = [
     {
-        'name': 'cull_idle',
-        'admin': True,
-        'command': 'python /srv/jupyterhub/cull_idle_servers.py --timeout=3600'.split(),
-    },
+        "name": "jupyterhub-idle-culler-service",
+        "command": [
+            sys.executable,
+            "-m", "jupyterhub_idle_culler",
+            "--timeout=3600",
+        ],
+        # "admin": True,
+    }
 ]
