@@ -45,6 +45,8 @@ c.NativeAuthenticator.seconds_before_next_try = 1200
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 c.DockerSpawner.image = os.environ['DOCKER_JUPYTER_CONTAINER']
 c.DockerSpawner.network_name = os.environ['DOCKER_NETWORK_NAME']
+#c.DockerSpawner.use_internal_ip = True
+#c.DockerSpawner.extra_host_config = { 'network_mode': 'bridge' }
 c.DockerSpawner.debug = True
 # See https://github.com/jupyterhub/dockerspawner/blob/master/examples/oauth/jupyterhub_config.py
 c.JupyterHub.hub_ip = os.environ['HUB_IP']
@@ -54,6 +56,10 @@ c.JupyterHub.hub_ip = os.environ['HUB_IP']
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan'
 c.DockerSpawner.notebook_dir = notebook_dir
 c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+
+# Remove containers once they are stopped.
+c.DockerSpawner.remove_containers = True
+
 
 # Other stuff
 c.Spawner.cpu_limit = 2

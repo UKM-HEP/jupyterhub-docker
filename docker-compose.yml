@@ -22,7 +22,7 @@ services:
     build: jupyterlab
     image: jupyroot_img
     container_name: jupyroot
-    network_mode: none
+    network_mode: ${COMPOSE_PROJECT_NAME}_default
     command: echo
 
   reverse-proxy:
