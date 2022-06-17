@@ -1,4 +1,4 @@
-# JupyterHub deployment in use at Université de Versailles
+# JupyterHub deployment in use at Universiti Kebangsaan Malaysia
 
 This is a [JupyterHub](https://jupyter.org/hub) deployment based on
 Docker currently in use at [Université de
