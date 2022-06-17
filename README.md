@@ -4,6 +4,9 @@ This is a [JupyterHub](https://jupyter.org/hub) deployment based on
 Docker currently in use at [Université de
 Versailles](https://jupyter.ens.uvsq.fr/).
 
+--> Traffic monitoring: http://ncpp.ddns.net:8080/dashboard/
+--> hub login : http://ncpp.ddns.net
+
 ## Features
 
 - Containerized single user Jupyter servers, using

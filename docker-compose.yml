@@ -19,7 +19,7 @@ services:
     restart: on-failure
 
   jupyterlab:
-    build: jupyterlab-root
+    build: jupyterlab-root-python310
     image: jupyroot_img
     container_name: jupyroot
     network_mode: ${COMPOSE_PROJECT_NAME}_default
