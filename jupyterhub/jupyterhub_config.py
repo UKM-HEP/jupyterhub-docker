@@ -32,21 +32,33 @@ c.JupyterHub.load_roles = [
 
 ## Authenticator
 # https://blog.jupyter.org/simpler-authentication-for-small-scale-jupyterhubs-with-nativeauthenticator-999534c77a09
-c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator'
-c.NativeAuthenticator.open_signup = True
-c.Authenticator.admin_users = { 'shoh' }
+#c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator'
+#c.NativeAuthenticator.open_signup = True
+#c.Authenticator.admin_users = { 'shoh' }
 
-c.NativeAuthenticator.check_common_password = True
+#c.NativeAuthenticator.check_common_password = True
 
-c.NativeAuthenticator.allowed_failed_logins = 3
-c.NativeAuthenticator.seconds_before_next_try = 1200
+#c.NativeAuthenticator.allowed_failed_logins = 3
+#c.NativeAuthenticator.seconds_before_next_try = 1200
+
+from oauthenticator.github import GitHubOAuthenticator
+c.JupyterHub.authenticator_class = GitHubOAuthenticator
+
+c.GitHubOAuthenticator.create_system_users = True
+
+c.Authenticator.allowed_users = allowed_users = set()
+c.JupyterHub.admin_users = admin = set()
+
+c.MyOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
+c.MyOAuthenticator.client_id = os.environ['OAUTH_CLIENT_ID']
+c.MyOAuthenticator.client_secret = os.environ['OAUTH_CLIENT_SECRET']
+
+#################################################################
 
 ## Docker spawner
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 c.DockerSpawner.image = os.environ['DOCKER_JUPYTER_CONTAINER']
 c.DockerSpawner.network_name = os.environ['DOCKER_NETWORK_NAME']
-#c.DockerSpawner.use_internal_ip = True
-#c.DockerSpawner.extra_host_config = { 'network_mode': 'bridge' }
 c.DockerSpawner.debug = True
 # See https://github.com/jupyterhub/dockerspawner/blob/master/examples/oauth/jupyterhub_config.py
 c.JupyterHub.hub_ip = os.environ['HUB_IP']
@@ -62,8 +74,8 @@ c.DockerSpawner.remove_containers = True
 
 
 # Other stuff
-c.Spawner.cpu_limit = 2
-c.Spawner.mem_limit = '5G'
+c.Spawner.cpu_limit = 2.0
+c.Spawner.mem_limit = '4G'
 
 ## Services
 # terminate idle jupyter session after 1 hour
