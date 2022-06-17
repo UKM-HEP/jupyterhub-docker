@@ -34,7 +34,7 @@ c.JupyterHub.load_roles = [
 # https://blog.jupyter.org/simpler-authentication-for-small-scale-jupyterhubs-with-nativeauthenticator-999534c77a09
 c.JupyterHub.authenticator_class = 'nativeauthenticator.NativeAuthenticator'
 c.NativeAuthenticator.open_signup = True
-c.Authenticator.admin_users = { 'shoh' ,'root' }
+c.Authenticator.admin_users = { 'shoh' }
 
 c.NativeAuthenticator.check_common_password = True
 

@@ -1,6 +1,5 @@
 # This will install:
-# - CentOS 7
-# - Jupyter 
+# - root with python3.6 (EOL)
 
 # To see the version numbers (which change as the EPEL and PyPI repositories evolve)
 # start the Terminal from the Jupyter notebook and type (e.g.):
