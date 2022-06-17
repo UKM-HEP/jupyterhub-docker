@@ -1,5 +1,6 @@
 # This will install:
 # - CentOS 7
+# - python3.10
 # - Jupyter 
 
 # To see the version numbers (which change as the EPEL and PyPI repositories evolve)
@@ -30,7 +31,7 @@ USER root
 RUN yum -y update
 RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN yum -y install centos-release-scl
-RUN yum -y install sudo tini wget bzip2
+RUN yum -y install sudo tini wget bzip2 htop emacs which
 
 # The "native" gcc compiler in CentOS 7 doesn't support C++11, which is
 # needed to compile at least one of the python packages below. Include the
