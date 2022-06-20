@@ -7,6 +7,9 @@ Versailles](https://jupyter.ens.uvsq.fr/).
 --> Traffic monitoring: http://ncpp.ddns.net:8080/dashboard/
 --> hub login : http://ncpp.ddns.net
 
+## Computational model
+![Alt text](model.png?raw=true "Title")
+@auzilia
 ## Features
 
 - Containerized single user Jupyter servers, using
