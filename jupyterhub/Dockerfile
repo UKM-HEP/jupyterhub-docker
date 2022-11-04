@@ -16,6 +16,7 @@ RUN pip3 install \
 
 # Create oauthenticator directory and put necessary files in it
 RUN mkdir /srv/oauthenticator
+RUN mkdir /srv/jupyterhub/shared
 WORKDIR /srv/oauthenticator
 ENV OAUTHENTICATOR_DIR /srv/oauthenticator
 ADD jupyterhub_config.py /srv/jupyterhub/jupyterhub_config.py

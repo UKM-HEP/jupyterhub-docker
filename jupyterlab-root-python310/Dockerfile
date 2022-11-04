@@ -88,6 +88,10 @@ RUN arch=$(uname -m) && \
 RUN yum clean all
 
 RUN fix-permissions "/home/${NB_USER}"
+RUN mkdir -p /home/${NB_USER}/data/shared
+RUN mkdir -p /home/${NB_USER}/data/user
+RUN fix-permissions "/home/${NB_USER}/data/user"
+RUN fix-permissions "/home/${NB_USER}/data/shared"
 
 USER ${NB_UID}
 

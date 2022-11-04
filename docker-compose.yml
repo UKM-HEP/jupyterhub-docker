@@ -6,7 +6,9 @@ services:
     image: jupyhub_img
     container_name: jupyhub
     volumes:
+      # within the container
       - /var/run/docker.sock:/var/run/docker.sock
+      # bind docker volume on host for JupyterHub database (Hub data persistence)
       - jupyterhub_data:/srv/jupyterhub
     environment:
       - DOCKER_JUPYTER_CONTAINER=jupyroot_img
@@ -26,6 +28,10 @@ services:
     image: jupyroot_img
     container_name: jupyroot
     network_mode: ${COMPOSE_PROJECT_NAME}_default
+    volumes:
+      # bind docker volume on host
+      - /disk01/jupyter:/home/jovyan/data/user
+      - /disk01/cms-open-data:/home/jovyan/data/shared
     command: echo
 
   reverse-proxy:

@@ -10,6 +10,20 @@
 ##
 
 import os, sys
+#import shutil
+
+# https://github.com/jupyterhub/jupyterhub/tree/main/examples/bootstrap-script
+def create_dir_hook(spawner):
+    username = spawner.user.name # get the username
+    volume_path = os.path.join('/disk01/jupyter/', username ) #path on the jupytherhub host, create a folder based on username if not exists
+    if not os.path.exists(volume_path):
+        os.mkdir(volume_path)
+        os.chmod(volume_path, 0o755)
+        #shutil.chown(volume_path, user=username, group='users')
+#pass
+
+c = get_config()
+c.JupyterHub.log_level = 10
 
 ## Generic
 c.JupyterHub.admin_access = True
@@ -42,34 +56,30 @@ c.JupyterHub.load_roles = [
 #c.NativeAuthenticator.seconds_before_next_try = 1200
 #################################################################
 
-#from oauthenticator.github import GitHubOAuthenticator
-#c.JupyterHub.authenticator_class = GitHubOAuthenticator
+from oauthenticator.github import GitHubOAuthenticator
+c.JupyterHub.authenticator_class = GitHubOAuthenticator
 
-#c.GitHubOAuthenticator.create_system_users = True
-
-#c.Authenticator.allowed_users = allowed_users = set()
-#c.JupyterHub.admin_users = admin = set()
-
-#c.MyOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
-#c.MyOAuthenticator.client_id = os.environ['OAUTH_CLIENT_ID']
-#c.MyOAuthenticator.client_secret = os.environ['OAUTH_CLIENT_SECRET']
-
-#################################################################
-
-c = get_config()
-
-c.JupyterHub.log_level = 10
-from oauthenticator.github import LocalGitHubOAuthenticator
-
-c.JupyterHub.authenticator_class = LocalGitHubOAuthenticator
-
-c.LocalGitHubOAuthenticator.create_system_users = True
+c.GitHubOAuthenticator.create_system_users = True
 
 c.Authenticator.allowed_users = allowed_users = set()
 c.JupyterHub.admin_users = admin = set()
 
-join = os.path.join
+c.MyOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
+c.MyOAuthenticator.client_id = os.environ['OAUTH_CLIENT_ID']
+c.MyOAuthenticator.client_secret = os.environ['OAUTH_CLIENT_SECRET']
 
+#################################################################
+
+#from oauthenticator.github import LocalGitHubOAuthenticator
+#c.JupyterHub.authenticator_class = LocalGitHubOAuthenticator
+
+#c.LocalGitHubOAuthenticator.create_system_users = True
+#c.Authenticator.allowed_users = allowed_users = set()
+#c.JupyterHub.admin_users = admin = set()
+
+######################################################################
+
+join = os.path.join
 here = os.path.dirname(__file__)
 root = os.environ.get('OAUTHENTICATOR_DIR', here)
 sys.path.insert(0, root)
@@ -86,14 +96,14 @@ with open(join(root, 'userlist')) as f:
 
 c.GitHubOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
 
-# ssl config
-ssl = join(root, 'ssl')
-keyfile = join(ssl, 'ssl.key')
-certfile = join(ssl, 'ssl.cert')
-if os.path.exists(keyfile):
-    c.JupyterHub.ssl_key = keyfile
-if os.path.exists(certfile):
-    c.JupyterHub.ssl_cert = certfile
+#ssl config
+#https://hackmd.io/@DanielChen/Sy81P-Aw4?type=viewe
+# openssl req -x509 -nodes -days 3650 -newkey rsa:1024 -keyout /etc/jupyterhub/certificate/key.pem -out /etc/jupyterhub/certificate/cert.pem
+ssl = '/etc/jupyterhub/certificate/'
+keyfile = join(ssl, 'key.pem')
+certfile = join(ssl, 'cert.pem')
+if os.path.exists(keyfile): c.JupyterHub.ssl_key = keyfile
+if os.path.exists(certfile): c.JupyterHub.ssl_cert = certfile
 
 print("c.Authenticator.allowed_users : ", c.Authenticator.allowed_users)
 print("c.JupyterHub.admin_users : ", c.JupyterHub.admin_users)
@@ -112,13 +122,19 @@ c.JupyterHub.hub_ip = os.environ['HUB_IP']
 # see https://github.com/jupyterhub/dockerspawner#data-persistence-and-dockerspawner
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan'
 c.DockerSpawner.notebook_dir = notebook_dir
-c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+#c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+#c.Spawner.pre_spawn_hook = create_dir_hook
+c.DockerSpawner.volumes = { 
+    'jupyterhub-user-{username}' : notebook_dir , 
+    '/disk01/jupyter/{username}' : notebook_dir + '/data/user' ,
+    '/disk01/cms-open-data'      : notebook_dir + '/data/shared'
+}
 
 # Remove containers once they are stopped.
 c.DockerSpawner.remove_containers = True
 
 # Other stuff
-c.Spawner.cpu_limit = 2.0
+c.Spawner.cpu_limit = 4.0
 c.Spawner.mem_limit = '4G'
 
 # Advanced USER
