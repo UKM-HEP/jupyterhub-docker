@@ -88,10 +88,12 @@ RUN arch=$(uname -m) && \
 RUN yum clean all
 
 RUN fix-permissions "/home/${NB_USER}"
-RUN mkdir -p /home/${NB_USER}/data/shared
-RUN mkdir -p /home/${NB_USER}/data/user
-RUN fix-permissions "/home/${NB_USER}/data/user"
-RUN fix-permissions "/home/${NB_USER}/data/shared"
+RUN mkdir -p /home/${NB_USER}/data
+RUN fix-permissions "/home/${NB_USER}/data"
+
+# make a custom group and add joyvan into the group
+#RUN /usr/sbin/adduser/addgroup --gid 1024 mygroup
+#RUN /usr/sbin/adduser/adduser --disabled-password --gecos "" --force-badname --ingroup 1024 ${NB_UID}
 
 USER ${NB_UID}
 

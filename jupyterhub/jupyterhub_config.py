@@ -10,16 +10,20 @@
 ##
 
 import os, sys
-#import shutil
+import shutil
 
 # https://github.com/jupyterhub/jupyterhub/tree/main/examples/bootstrap-script
-def create_dir_hook(spawner):
-    username = spawner.user.name # get the username
-    volume_path = os.path.join('/disk01/jupyter/', username ) #path on the jupytherhub host, create a folder based on username if not exists
-    if not os.path.exists(volume_path):
-        os.mkdir(volume_path)
-        os.chmod(volume_path, 0o755)
-        #shutil.chown(volume_path, user=username, group='users')
+# relevant only to populate content in spawned container.
+#def create_dir_hook(spawner):
+#    username = spawner.user.name # get the username
+#    data_path = os.path.join( '/disk01/jupyter/' , username ) #path on the jupytherhub host, create a folder based on username if not exists
+#    print("Running ----> ")
+#    print("username : ", username)
+#    print("data_path : ", data_path)
+#    if not os.path.exists(data_path):
+#        os.mkdir(data_path, 0o755)
+#        print("PASS")
+#        shutil.chown(data_path, user=username, group='users')
 #pass
 
 c = get_config()
@@ -122,12 +126,12 @@ c.JupyterHub.hub_ip = os.environ['HUB_IP']
 # see https://github.com/jupyterhub/dockerspawner#data-persistence-and-dockerspawner
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan'
 c.DockerSpawner.notebook_dir = notebook_dir
-#c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
-#c.Spawner.pre_spawn_hook = create_dir_hook
+## attach the hook functions to the spawner
+##c.Spawner.pre_spawn_hook = create_dir_hook
 c.DockerSpawner.volumes = { 
     'jupyterhub-user-{username}' : notebook_dir , 
-    '/disk01/jupyter/{username}' : notebook_dir + '/data/user' ,
-    '/disk01/cms-open-data'      : notebook_dir + '/data/shared'
+    '/disk01/jupyter/{username}' : notebook_dir + '/work' ,
+    '/disk01/cms-open-data'      : notebook_dir + '/data'
 }
 
 # Remove containers once they are stopped.
