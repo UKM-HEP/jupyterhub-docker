@@ -15,4 +15,8 @@ for line in `cat jupyterhub/userlist`; do
     chown :100 $diskdir/$user
     chmod g+s $diskdir/$user
     cp -r $diskdir/examples $diskdir/$user
+
+    chmod 775 $diskdir/$user/examples
+    chown :100 $diskdir/$user/examples
+    chmod g+s $diskdir/$user/examples
 done

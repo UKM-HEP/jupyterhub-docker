@@ -43,6 +43,7 @@ RUN /usr/bin/python3 -m pip install --upgrade pip
 RUN pip3 install --upgrade wheel
 RUN touch /home/${NB_USER}/.cache/pip
 RUN fix-permissions /home/${NB_USER}/.cache/pip
+RUN pip3 install ipynb
 
 # Install Python 3 packages
 RUN arch=$(uname -m) && \
@@ -54,6 +55,8 @@ RUN arch=$(uname -m) && \
     mamba install --quiet --yes \
     'bokeh' \
     'conda-forge::blas=*=openblas' \
+    'nano' \
+    'emacs' \
     'cython' \
     'dask' \
     'dill' \
@@ -79,6 +82,8 @@ RUN arch=$(uname -m) && \
     'urllib3'\
     'pycurl'\
     'uproot'\
+    'scikit-learn' \
+    'pytorch' \
     'root' && \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \

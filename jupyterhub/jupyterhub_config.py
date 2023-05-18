@@ -138,8 +138,8 @@ c.DockerSpawner.volumes = {
 c.DockerSpawner.remove_containers = True
 
 # Other stuff
-c.Spawner.cpu_limit = 4.0
-c.Spawner.mem_limit = '4G'
+c.Spawner.cpu_limit = 7.0
+c.Spawner.mem_limit = '8G'
 
 # Advanced USER
 #c.DockerSpawner.extra_host_config = {
