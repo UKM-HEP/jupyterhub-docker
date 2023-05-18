@@ -12,8 +12,8 @@ Versailles](https://jupyter.ens.uvsq.fr/).
 @auzilia
 
 ## To-do
- - [ ] Add data persistance volume.
- - [ ] Personalize working directory for users.
+ - [x] Add data persistance volume.
+ - [x] Personalize working directory for users.
  - [ ] SSL certificates using gpg.
  - [ ] Prepare multiple docker stack notebooks.
 ## Features
